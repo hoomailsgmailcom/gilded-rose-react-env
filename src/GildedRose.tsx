@@ -16,7 +16,7 @@ import WelcomeMessage from "./components/WelcomeMessage";
 interface Props {}
 
 interface State {
-    items: Item[]
+    items: Item[],
 }
 
 const shop = new Shop(items);
@@ -25,8 +25,16 @@ class GildedRose extends React.Component<Props, State> {
     constructor(props: Props) {
         super(props);
         this.state = {
-            items: shop.items
+            items: shop.items,
         };
+
+
+
+
+
+
+
+        
         console.log('Initial Shop state: ', this.state.items)
     }
 
@@ -39,6 +47,23 @@ class GildedRose extends React.Component<Props, State> {
         })
     }
 
+    getInSaleItems(currentElement:any) {
+        return currentElement.quality > 0 && currentElement.sellIn > 0; 
+    }
+    getDiscountItems(currentElement:any) {
+       
+        return currentElement.quality <= 0 || currentElement.sellIn <= 0; 
+    }
+
+    showSaleItems()
+    {
+        return this.state.items.filter(this.getInSaleItems)
+    }
+    
+    showDiscountItems()
+    {
+        return this.state.items.filter(this.getDiscountItems)
+    }
     render() {
         return (
             <div className="App">
@@ -58,13 +83,13 @@ class GildedRose extends React.Component<Props, State> {
                     <Row>
                         <Col>
                             <Tabs defaultActiveKey="sale" id="uncontrolled-tab-example">
-                                <Tab eventKey="sale" title="On Sale">
+                                <Tab eventKey="sale" title={`On Sale (${this.showSaleItems().length})`}>
                                     <Card>
-                                        <ShopItemTable items={this.state.items}/>
+                                        <ShopItemTable items={this.showSaleItems()}/>
                                     </Card>
                                 </Tab>
-                                <Tab eventKey="discount" title="Discount">
-                                    Coming soon...
+                                <Tab eventKey="discount" title={`Discount (${this.showDiscountItems().length})`}>
+                                <ShopItemTable items={this.showDiscountItems()}/>
                                 </Tab>
                             </Tabs>
                             <Button onClick={this.updateShowQuality.bind(this)}>Update Quality</Button>
